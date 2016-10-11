@@ -10,22 +10,6 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(25, PIN1, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(40, PIN2, NEO_GRB + NEO_KHZ800);
 
-void setup() {
-  // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
-  #if defined (__AVR_ATtiny85__)
-    if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
-  #endif
-  // End of trinket special code
-
-  Serial.begin(9600);
-
-  strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
-
-  strip2.begin();
-  strip2.show();
-}
-
 boolean goForward = true;
 
 // Desgined for 25 pixels.. Armmy man lunging at monster
@@ -266,16 +250,6 @@ void BackAndForth()
   goForward = !goForward;
 }
 
-void loop() {
-  
-  //strobeEveryOther();
- // lungeAttackAnimation2Strip();
-  //lungeAttackAnimation();
-  //ContinuousForward();
-  //BackAndForth();
-  BackAndForthStrip2Only();
-}
-
 // Fill the dots one after the other with a color
 void colorWipe(uint32_t c, uint8_t wait) {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
@@ -359,4 +333,31 @@ uint32_t Wheel(byte WheelPos) {
   }
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+
+void setup() {
+  // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
+  #if defined (__AVR_ATtiny85__)
+    if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
+  #endif
+  // End of trinket special code
+
+  Serial.begin(9600);
+
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
+
+  strip2.begin();
+  strip2.show();
+}
+
+void loop() {
+  
+  //strobeEveryOther();
+ // lungeAttackAnimation2Strip();
+  //lungeAttackAnimation();
+  //ContinuousForward();
+  //BackAndForth();
+  BackAndForthStrip2Only();
 }
