@@ -3,10 +3,12 @@
   #include <avr/power.h>
 #endif
 
-#define PIN 6
+#define PIN1 6
+#define PIN2 7
 
 //Adafruit_NeoPixel strip = Adafruit_NeoPixel(25, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(25, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(25, PIN1, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(40, PIN2, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -19,6 +21,9 @@ void setup() {
 
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
+
+  strip2.begin();
+  strip2.show();
 }
 
 boolean goForward = true;
@@ -69,6 +74,106 @@ void lungeAttackAnimation()
   goForward = !goForward;
 }
 
+void strobeEveryOther()
+{
+  boolean everyOther = true;
+
+  for(uint16_t i = 0; i<strip.numPixels(); i++)
+  {
+    for(uint16_t j = 0; j<strip.numPixels(); j++)
+    {
+      strip.setPixelColor(j, 0x000000);
+      strip2.setPixelColor(j, 0x000000);
+    }
+
+    uint16_t stripNumber = 0;
+    stripNumber = strip.numPixels() - i - 1;
+
+    if(goForward)
+      stripNumber = i;
+    else
+      stripNumber = strip.numPixels() - i - 1;
+
+    if(everyOther)
+    {
+      strip.setPixelColor(stripNumber, 0xFFFFFF);
+      strip2.setPixelColor(stripNumber, 0x5555FF);
+    }
+    else
+    {
+      strip.setPixelColor(stripNumber, 0x000000);
+      strip2.setPixelColor(stripNumber, 0x000000);
+    }
+    everyOther = !everyOther;
+
+    delay(30);
+      
+
+    strip.show();
+    strip2.show();
+  }
+
+  goForward = !goForward;
+}
+
+void lungeAttackAnimation2Strip()
+{
+  boolean everyOther = false;
+  for(uint16_t i = 0; i < strip2.numPixels(); i++)
+  {
+      strip2.setPixelColor(i, 0x000000);
+  }
+
+  for(uint16_t i = 0; i<strip.numPixels(); i++)
+  {
+    if(everyOther)
+      strip2.setPixelColor(12, 0xFFFFFF);
+    else 
+      strip2.setPixelColor(12, 0x000000);
+    everyOther = !everyOther;
+
+    for(uint16_t j = 0; j<strip.numPixels(); j++)
+      strip.setPixelColor(j, 0x000000);
+
+    uint16_t stripNumber = 0;
+    if(goForward)
+      stripNumber = i;
+    else
+      stripNumber = strip.numPixels() - i - 1;
+
+    //strip.setPixelColor(stripNumber, wheel(map(stripNumber, 0, 25, 0, 255)) );
+    if(stripNumber < 5)
+    {
+      strip.setPixelColor(stripNumber, 0xFF0000);
+    }
+    else
+    {
+      strip.setPixelColor(stripNumber, 0xAAAAFF);
+    }
+
+    if(stripNumber < 5)
+    {
+      delay(50);
+    }
+    else if(stripNumber < 10)
+    {
+      delay(100 - ((stripNumber-5)*10));
+    }
+    else
+    {
+      delay(100);
+    }
+      
+
+    Serial.println(strip.numPixels() - i);
+
+    strip.show();
+    strip2.show();
+  }
+
+  goForward = !goForward;
+}
+
 void ContinuousForward()
 {
   for(uint16_t i = 0; i<strip.numPixels(); i++)
@@ -98,12 +203,45 @@ void ContinuousForward()
   }
 }
 
+void BackAndForthStrip2Only()
+{
+  for(uint16_t i = 0; i<strip2.numPixels(); i++)
+  {
+    for(uint16_t j = 0; j<strip2.numPixels(); j++)
+    {
+      strip2.setPixelColor(j, 0x000000);
+    }
+
+    uint16_t stripNumber = 0;
+    stripNumber = strip2.numPixels() - i - 1;
+
+    if(goForward)
+      stripNumber = i;
+    else
+      stripNumber = strip2.numPixels() - i - 1;
+
+    strip2.setPixelColor(stripNumber, 0xFFFFFF);
+
+    delay(100);
+      
+
+    Serial.println(strip2.numPixels() - i);
+
+    strip2.show();
+  }
+
+  goForward = !goForward;
+}
+
 void BackAndForth()
 {
   for(uint16_t i = 0; i<strip.numPixels(); i++)
   {
     for(uint16_t j = 0; j<strip.numPixels(); j++)
+    {
       strip.setPixelColor(j, 0x000000);
+      strip2.setPixelColor(j, 0x000000);
+    }
 
     uint16_t stripNumber = 0;
     stripNumber = strip.numPixels() - i - 1;
@@ -114,6 +252,7 @@ void BackAndForth()
       stripNumber = strip.numPixels() - i - 1;
 
     strip.setPixelColor(stripNumber, 0xFFFFFF);
+    strip2.setPixelColor(stripNumber, 0xFFFFFF);
 
     delay(100);
       
@@ -121,6 +260,7 @@ void BackAndForth()
     Serial.println(strip.numPixels() - i);
 
     strip.show();
+    strip2.show();
   }
 
   goForward = !goForward;
@@ -128,9 +268,12 @@ void BackAndForth()
 
 void loop() {
   
-  lungeAttackAnimation();
+  //strobeEveryOther();
+ // lungeAttackAnimation2Strip();
+  //lungeAttackAnimation();
   //ContinuousForward();
   //BackAndForth();
+  BackAndForthStrip2Only();
 }
 
 // Fill the dots one after the other with a color
